@@ -6,4 +6,4 @@ if __name__ == "__main__":
     # print(connection)
     visa_data_obj = UsVisaData()
     visa_df = visa_data_obj.export_collection_as_dataframe(COLLECTION_NAME)
-    print(visa_df) 
+    print(visa_df.head()) 
