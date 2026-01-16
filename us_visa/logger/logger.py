@@ -19,5 +19,3 @@ logging.basicConfig(level=logging.INFO,
 
 logs_path = os.path.join(from_root(),log_dir,LOG_FILE)
 
-if __name__ == "__main__":
-    logging.info("This is a test log message")

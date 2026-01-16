@@ -35,13 +35,13 @@ def write_yaml_file(file_path:str,
         raise USvisaException(e,sys) from e # use original error and traceback
     
 def load_object(file_path: str) -> object:
-    logging.info("Entered the load_object method of utils")
+    # logging.info("Entered the load_object method of utils")
 
     try:
         with open(file_path,"rb") as f:
             obj = dill.load(f)
         
-        logging.info("Exited load_object() in utils")
+        logging.info(f"Loaded {obj} object")
         return obj 
     
     except Exception as e:
@@ -67,23 +67,23 @@ def load_numpy_array_data(file_path: str):
         raise USvisaException(e,sys) from e
 
 def save_object(file_path: str,obj: object):
-    logging.info("Entered the save_object() in utils")
+    # logging.info("Entered the save_object() in utils")
     
     try:
         os.makedirs(os.path.dirname(file_path),exist_ok=True)
         with open(file_path,"wb") as f:
             dill.dump(obj,f)
         
-        logging.info("Exited save_object() of utils")
+        logging.info(f"Saved object file in path:{file_path}")
     
     except Exception as e:
         raise USvisaException(e,sys) from e
 
 def drop_columns(df: DataFrame,cols: list) -> DataFrame:
-    logging.info("Entered drop_columns() in utils")
+    # logging.info("Entered drop_columns() in utils")
     try:
         df = df.drop(columns=cols,axis=1)
-        logging.info("Exited drop_columns() in utils")
+        logging.info(f"Dropped columns {cols} from dataframe")
         return df
     except Exception as e:
         raise USvisaException(e,sys) from e   
