@@ -32,7 +32,7 @@ def write_yaml_file(file_path:str,
             yaml.dump(content,file)
         
     except Exception as e:
-        raise USvisaException(e,sys) from e # use original error and traceback
+        raise USvisaException(e,sys) 
     
 def load_object(file_path: str) -> object:
     # logging.info("Entered the load_object method of utils")
@@ -45,17 +45,17 @@ def load_object(file_path: str) -> object:
         return obj 
     
     except Exception as e:
-        raise USvisaException(e,sys) from e 
+        raise USvisaException(e,sys) 
 
 def save_numpy_array_data(file_path: str,array: np.array):
     try:
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path,exist_ok=True)
-        with open("file_path","wb") as f:
+        with open(file_path,"wb") as f:
             np.save(f,array)
     
     except Exception as e:
-        raise USvisaException(e,sys) from e
+        raise USvisaException(e,sys)
     
 
 def load_numpy_array_data(file_path: str):
@@ -64,7 +64,7 @@ def load_numpy_array_data(file_path: str):
             return np.load(f)
     
     except Exception as e:
-        raise USvisaException(e,sys) from e
+        raise USvisaException(e,sys) 
 
 def save_object(file_path: str,obj: object):
     # logging.info("Entered the save_object() in utils")
@@ -77,7 +77,7 @@ def save_object(file_path: str,obj: object):
         logging.info(f"Saved object file in path:{file_path}")
     
     except Exception as e:
-        raise USvisaException(e,sys) from e
+        raise USvisaException(e,sys) 
 
 def drop_columns(df: DataFrame,cols: list) -> DataFrame:
     # logging.info("Entered drop_columns() in utils")
@@ -86,4 +86,4 @@ def drop_columns(df: DataFrame,cols: list) -> DataFrame:
         logging.info(f"Dropped columns {cols} from dataframe")
         return df
     except Exception as e:
-        raise USvisaException(e,sys) from e   
+        raise USvisaException(e,sys) 
