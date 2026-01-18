@@ -57,3 +57,7 @@ MODEL_TRAINER_MODEL_CONFIG_FILE_PATH: str = os.path.join("config","model.yaml")
 MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
 MODEL_BUCKET_NAME = "usvisa-model-1-2026"
 MODEL_PUSHER_S3_KEY = "model-registry"
+
+# Prediction pipeline constants 
+APP_HOST = "0.0.0.0"
+APP_PORT = 8000
