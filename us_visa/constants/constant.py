@@ -1,14 +1,12 @@
 import os 
 from datetime import date
-from dotenv import load_dotenv
 
-load_dotenv()
 
 DATABASE_NAME = "US_VISA"
 
 COLLECTION_NAME = "visa_data"
 
-MONGODB_URL_KEY = os.getenv("MONGODB_CONNECTION_URL")
+MONGODB_URL_KEY = "MONGODB_CONNECTION_URL"
 
 PIPELINE_NAME: str = "usvisa"
 ARTIFACT_DIR: str = "artifact"
@@ -24,6 +22,11 @@ CURRENT_YEAR = date.today().year
 PREPROCESSING_OBJECT_FILE_NAME = "preprocessing.pkl"
 SCHEMA_FILE_PATH = os.path.join("config","schema.yaml")
 
+
+# update these a bit later
+AWS_ACCESS_KEY_ID_ENV_KEY = "AWS_ACCESS_KEY_ID" 
+AWS_SECRET_ACCESS_ID_ENV_KEY = "AWS_SECRET_ACCESS_KEY_ID"
+REGION_NAME = "ap-southeast-1"
 
 # Below are the data ingestion related constants 
 DATA_INGESTION_COLLECTION_NAME: str = "visa_data"
@@ -49,3 +52,8 @@ MODEL_TRAINER_TRAINED_MODEL_DIR: str = "trained_model"
 MODEL_TRAINER_TRAINED_MODEL_NAME: str ="model.pkl"
 MODEL_TRAINER_EXPECTED_SCORE: float = 0.6 # Set higher benchmark for this score atleast 80% acc
 MODEL_TRAINER_MODEL_CONFIG_FILE_PATH: str = os.path.join("config","model.yaml")
+
+# Model evaluation constants
+MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
+MODEL_BUCKET_NAME = "usvisa-model-1-2026"
+MODEL_PUSHER_S3_KEY = "model-registry"
