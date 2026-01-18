@@ -87,7 +87,7 @@ class DataTransformation:
             return preprocessor
 
         except Exception as e:
-            raise USvisaException(e,sys) from e 
+            raise USvisaException(e,sys) 
     
     def initiate_data_transformation(self) -> DataTransformationArtifact:
 
@@ -185,5 +185,5 @@ class DataTransformation:
                 raise Exception(self.data_validation_artifact.message)
 
         except Exception as e:
-            raise USvisaException(e,sys) from e
+            raise USvisaException(e,sys) 
         
