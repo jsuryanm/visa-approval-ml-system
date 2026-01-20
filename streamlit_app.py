@@ -2,6 +2,9 @@ import streamlit as st
 import requests
 import os 
 from us_visa.constants.constant import APP_PORT
+from dotenv import load_dotenv
+
+load_dotenv()
 
 public_ip = os.getenv("EC2_PUBLIC_IP","localhost")
 API_URL = f"http://{public_ip}:{APP_PORT}/predict"
