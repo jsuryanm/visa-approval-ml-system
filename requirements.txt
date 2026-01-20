@@ -24,6 +24,6 @@ jinja2
 python-multipart
 python-dotenv
 streamlit
-request
+requests
 pydantic
 -e .
