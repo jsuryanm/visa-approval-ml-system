@@ -23,6 +23,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Get EC2 Public IP for build
+        id: get-build-ip
+        run: |
+          # This gets the IP from GitHub secrets or you can fetch it from AWS
+          echo "::set-output name=ec2_ip::${{ secrets.EC2_PUBLIC_IP }}"
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -30,7 +36,9 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPO }}
           IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  
+          docker build \
+            --build-arg EC2_PUBLIC_IP=${{ steps.get-build-ip.outputs.ec2_ip }} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
@@ -56,31 +64,45 @@ jobs:
       - name: Get EC2 Public IP
         id: get-ip
         run: |
-          curl http://169.254.169.254/latest/meta-data/public-ipv4 > public-ip.txt
-          PUBLIC_IP=$(cat public-ip.txt)
+          PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+          echo "EC2 Public IP: $PUBLIC_IP"
           echo "::set-output name=public_ip::$PUBLIC_IP"
         shell: bash
 
-      - name: Run Docker Image for FastAPI and Streamlit
+      - name: Stop and Remove Old Containers
         run: |
-          # Run FastAPI
+          docker stop us-visa-app || true
+          docker rm us-visa-app || true
+        shell: bash
+
+      - name: Pull Latest Docker Image
+        run: |
+          docker pull "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
+        shell: bash
+
+      - name: Run Docker Container with FastAPI and Streamlit
+        run: |
           docker run -d \
+            --name us-visa-app \
             --add-host=169.254.169.254:host-gateway \
             -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -e AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" \
             -e MONGODB_URL="${{ secrets.MONGODB_URL }}" \
-            -p 8000:8000 \
-            "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
-
-          # Run Streamlit with EC2 Public IP as an Environment Variable
-          docker run -d \
-            --add-host=169.254.169.254:host-gateway \
-            -p 8501:8501 \
             -e EC2_PUBLIC_IP="${{ steps.get-ip.outputs.public_ip }}" \
-            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -e AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" \
-            "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest \
-            sh -c "streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0"
+            -p 8000:8000 \
+            -p 8501:8501 \
+            --restart unless-stopped \
+            "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
+        shell: bash
+
+      - name: Verify Deployment
+        run: |
+          echo "Waiting for services to start..."
+          sleep 10
+          docker ps
+          docker logs us-visa-app --tail 50
+          echo "Deployment completed!"
+          echo "Streamlit UI: http://${{ steps.get-ip.outputs.public_ip }}:8501"
+          echo "FastAPI Docs: http://${{ steps.get-ip.outputs.public_ip }}:8000/docs"
         shell: bash
