@@ -1,46 +1,28 @@
-name: Deploy Application using Docker Image to EC2 instance
+name: Deploy Application Docker Image to EC2 instance
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Allow manual trigger
+
 
 jobs:
   Continuous-Integration:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Get EC2 Instance Public IP
-        id: get-ec2-ip
-        run: |
-          # Method 1: Using instance ID (recommended)
-          EC2_IP=$(aws ec2 describe-instances \
-            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
-            --query "Reservations[0].Instances[0].PublicIpAddress" \
-            --output text)
-          
-          # Method 2: Using Name tag (alternative - uncomment if you prefer)
-          # EC2_IP=$(aws ec2 describe-instances \
-          #   --filters "Name=tag:Name,Values=${{ secrets.EC2_INSTANCE_NAME }}" \
-          #   --query "Reservations[0].Instances[0].PublicIpAddress" \
-          #   --output text)
-          
-          echo "EC2 Public IP: $EC2_IP"
-          echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
-
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -49,32 +31,19 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPO }}
           IMAGE_TAG: latest
         run: |
-          echo "Building Docker image with EC2_PUBLIC_IP=${{ steps.get-ec2-ip.outputs.ec2_ip }}"
-          
-          docker build \
-            --build-arg EC2_PUBLIC_IP=${{ steps.get-ec2-ip.outputs.ec2_ip }} \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Output build info
-        run: |
-          echo "✅ Image built and pushed successfully"
-          echo "📦 Image: ${{ steps.build-image.outputs.image }}"
-          echo "🌐 EC2 IP: ${{ steps.get-ec2-ip.outputs.ec2_ip }}"
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   Continuous-Deployment:
     needs: Continuous-Integration
     runs-on: self-hosted
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -82,98 +51,8 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Get EC2 Public IP
-        id: get-ip
+      - name: Run Docker Image to serve users
         run: |
-          PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-          echo "EC2 Public IP: $PUBLIC_IP"
-          echo "public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
-
-      - name: Stop and remove old containers
-        run: |
-          echo "🛑 Stopping old containers..."
-          docker stop us-visa-app 2>/dev/null || echo "No container to stop"
-          docker rm us-visa-app 2>/dev/null || echo "No container to remove"
-          
-          # Clean up old images (optional)
-          docker image prune -f
-
-      - name: Pull latest Docker image
-        run: |
-          echo "📥 Pulling latest image from ECR..."
-          docker pull "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
-
-      - name: Run Docker container
-        run: |
-          echo "🚀 Starting new container..."
-          docker run -d \
-            --name us-visa-app \
-            --add-host=169.254.169.254:host-gateway \
-            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -e AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" \
-            -e MONGODB_URL="${{ secrets.MONGODB_URL }}" \
-            -p 8000:8000 \
-            -p 8501:8501 \
-            --restart unless-stopped \
-            "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
-
-      - name: Wait for services to start
-        run: |
-          echo "⏳ Waiting for services to initialize..."
-          sleep 15
-
-      - name: Verify deployment
-        run: |
-          echo "🔍 Verifying deployment..."
-          
-          # Check if container is running
-          if docker ps | grep -q us-visa-app; then
-            echo "✅ Container is running"
-          else
-            echo "❌ Container is not running"
-            exit 1
-          fi
-          
-          # Show container status
-          echo ""
-          echo "📊 Container Status:"
-          docker ps --filter name=us-visa-app
-          
-          # Show recent logs
-          echo ""
-          echo "📝 Recent Logs:"
-          docker logs us-visa-app --tail 50
-          
-          # Test endpoints
-          echo ""
-          echo "🧪 Testing endpoints..."
-          
-          # Test FastAPI
-          if curl -f -s http://localhost:8000/docs > /dev/null; then
-            echo "✅ FastAPI is responding"
-          else
-            echo "⚠️  FastAPI might not be ready yet"
-          fi
-          
-          # Test Streamlit
-          if curl -f -s http://localhost:8501 > /dev/null; then
-            echo "✅ Streamlit is responding"
-          else
-            echo "⚠️  Streamlit might not be ready yet"
-          fi
-
-      - name: Display access URLs
-        run: |
-          echo ""
-          echo "========================================="
-          echo "🎉 Deployment Completed Successfully!"
-          echo "========================================="
-          echo ""
-          echo "📱 Access your application at:"
-          echo "   Streamlit UI:  http://${{ steps.get-ip.outputs.public_ip }}:8501"
-          echo "   FastAPI Docs:  http://${{ steps.get-ip.outputs.public_ip }}:8000/docs"
-          echo ""
-          echo "========================================="
+         docker run -d -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" -e AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}" -e MONGODB_URL="${{ secrets.MONGODB_URL }}" -p 8080:8080 "${{ steps.login-ecr.outputs.registry }}"/"${{ secrets.ECR_REPO }}":latest
