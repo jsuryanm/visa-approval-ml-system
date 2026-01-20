@@ -28,5 +28,5 @@ class MongoDBClient:
             logging.info("MongoDB connection successful")
 
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         

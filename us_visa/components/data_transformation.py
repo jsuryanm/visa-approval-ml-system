@@ -38,7 +38,7 @@ class DataTransformation:
             self._schema_config = read_yaml_file(file_path=SCHEMA_FILE_PATH)
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     @staticmethod
     def read_data(file_path) -> pd.DataFrame:
@@ -46,7 +46,7 @@ class DataTransformation:
             return pd.read_csv(file_path)
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def get_data_transformer_object(self) -> Pipeline:
         '''
@@ -87,7 +87,7 @@ class DataTransformation:
             return preprocessor
 
         except Exception as e:
-            raise USvisaException(e,sys) 
+            raise USvisaException(str(e),sys) 
     
     def initiate_data_transformation(self) -> DataTransformationArtifact:
 
@@ -185,5 +185,5 @@ class DataTransformation:
                 raise Exception(self.data_validation_artifact.message)
 
         except Exception as e:
-            raise USvisaException(e,sys) 
+            raise USvisaException(str(e),sys) 
         

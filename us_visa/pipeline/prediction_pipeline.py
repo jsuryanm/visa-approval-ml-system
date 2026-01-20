@@ -36,18 +36,18 @@ class USvisaData:
             self.company_age = company_age
 
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
 
     def get_usvisa_input_data_frame(self) -> DataFrame:
         '''
         Returns a dataframe from usvisa class
         '''
         try:
-            usvisa_input_dict = self.get_usvisa_input_data_frame()
+            usvisa_input_dict = self.get_usvisa_data_as_dict()
             return DataFrame(usvisa_input_dict)
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def get_usvisa_data_as_dict(self):
         '''
@@ -71,7 +71,7 @@ class USvisaData:
             return input_data
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
 class USvisaClassifier:
     def __init__(self,
@@ -82,7 +82,7 @@ class USvisaClassifier:
         try:
             self.prediction_pipeline_config = prediction_pipeline_config
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     
     def predict(self,dataframe) -> str: 
@@ -100,6 +100,6 @@ class USvisaClassifier:
             return result
         
         except Exception as e:
-            raise USvisaClassifier(e,sys)
+            raise USvisaClassifier(str(e),sys)
 
         

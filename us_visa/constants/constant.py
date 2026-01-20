@@ -61,3 +61,4 @@ MODEL_PUSHER_S3_KEY = "model-registry"
 # Prediction pipeline constants 
 APP_HOST = "0.0.0.0"
 APP_PORT = 8000
+

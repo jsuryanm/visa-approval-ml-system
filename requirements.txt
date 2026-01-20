@@ -23,4 +23,7 @@ uvicorn
 jinja2
 python-multipart
 python-dotenv
+streamlit
+request
+pydantic
 -e .

@@ -37,4 +37,4 @@ class ModelPusher:
 
             return model_pusher_artifact
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)

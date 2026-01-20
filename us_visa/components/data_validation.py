@@ -33,7 +33,7 @@ class DataValidation:
             self._schema_config = read_yaml_file(file_path=SCHEMA_FILE_PATH)
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def validate_number_of_columns(self,visa_df: DataFrame):
         """
@@ -48,7 +48,7 @@ class DataValidation:
             return status
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def is_column_exist(self,visa_df: DataFrame) -> bool:
         """
@@ -79,7 +79,7 @@ class DataValidation:
             return False if len(missing_categorical_columns) > 0 or len(missing_numerical_columns) > 0 else True
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     @staticmethod
     def read_data(file_path) -> DataFrame:
@@ -150,7 +150,7 @@ class DataValidation:
             return drift_status
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     def initiate_data_validation(self) -> DataValidationArtifact:
         """
@@ -207,4 +207,4 @@ class DataValidation:
             
             return data_validation_artifact 
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)

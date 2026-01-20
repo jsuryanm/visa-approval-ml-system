@@ -90,7 +90,7 @@ class ModelTrainer:
             return best_model,best_metric_artifact,best_score
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     def initiate_model_trainer(self) -> ModelTrainerArtifact:
         '''
@@ -128,4 +128,4 @@ class ModelTrainer:
             return model_trainer_artifact
 
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)

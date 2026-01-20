@@ -33,4 +33,4 @@ class UsVisaData:
             return df
 
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)

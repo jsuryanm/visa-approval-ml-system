@@ -43,7 +43,7 @@ class UsVisaModel:
             return self.trained_model_object.predict(transformed_feature)
 
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def __repr__(self):
         return f"{type(self.trained_model_object).__name__}()"

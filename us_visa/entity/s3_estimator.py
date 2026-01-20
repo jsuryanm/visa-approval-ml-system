@@ -27,7 +27,7 @@ class USvisaEstimator:
             return self.s3.s3_key_path_available(bucket_name=self.bucket_name,
                                                  s3_key=model_path)
         except USvisaException as e:
-            print(e)
+            print(str(e))
             return False
     
     def load_model(self) -> UsVisaModel:
@@ -49,7 +49,7 @@ class USvisaEstimator:
                                 bucket_name=self.bucket_name,
                                 remove=remove)
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     def predict(self,dataframe: DataFrame):
         try:
@@ -59,5 +59,5 @@ class USvisaEstimator:
             return self.loaded_model.predict(dataframe=dataframe)
 
         except Exception as e:
-            raise USvisaException(e,sys) 
+            raise USvisaException(str(e),sys) 
 

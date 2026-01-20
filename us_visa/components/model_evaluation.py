@@ -38,7 +38,7 @@ class ModelEvaluation:
             self.model_trainer_artifact = model_trainer_artifact
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def get_best_model(self) -> Optional[USvisaEstimator]:
         '''
@@ -56,7 +56,7 @@ class ModelEvaluation:
             if usvisa_estimator.is_model_present(model_path=model_path):
                 return usvisa_estimator
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
     
     def evaluate_model(self) -> EvaluationModelResponse:
         '''
@@ -97,7 +97,7 @@ class ModelEvaluation:
             logging.info(f"Result:{result}")
             return result
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
         
     def initiate_model_evaluation(self) -> ModelEvaluationArtifact:
         '''
@@ -120,4 +120,4 @@ class ModelEvaluation:
             return model_evaluation_artifact
         
         except Exception as e:
-            raise USvisaException(e,sys)
+            raise USvisaException(str(e),sys)
