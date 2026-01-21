@@ -9,9 +9,11 @@ from uvicorn import run as app_run
 from typing import Optional
 
 from us_visa.constants.constant import APP_HOST, APP_PORT
-from us_visa.pipline.prediction_pipeline import USvisaData, USvisaClassifier
-from us_visa.pipline.training_pipeline import TrainPipeline
+from us_visa.pipeline.training_pipeline import TrainingPipeline
+from us_visa.pipeline.prediction_pipeline import USvisaData,USvisaClassifier
+from dotenv import load_dotenv
 
+load_dotenv()
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -66,7 +68,7 @@ async def index(request: Request):
 @app.get("/train")
 async def trainRouteClient():
     try:
-        train_pipeline = TrainPipeline()
+        train_pipeline = TrainingPipeline()
 
         train_pipeline.run_pipeline()
 

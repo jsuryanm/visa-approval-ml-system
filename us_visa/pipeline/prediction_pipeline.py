@@ -100,6 +100,6 @@ class USvisaClassifier:
             return result
         
         except Exception as e:
-            raise USvisaClassifier(str(e),sys)
+            raise USvisaException(str(e),sys)
 
         
