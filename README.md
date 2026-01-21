@@ -1,5 +1,5 @@
 # visa-approval-ml-system
-End-to-end machine learning system for predicting US visa approval or rejection, featuring data pipelines, model training, FastAPI inference, and  frontend UI.
+An End-to-End machine learning system for US visa approval prediction, using automated data pipelines, model training and evaluation, FastAPI-based inference.
 
 ## Project Overview
 
@@ -328,6 +328,7 @@ AWS_SECRET_ACCESS_KEY_ID="AWS_SECRET_ACCESS_KEY_ID"
    - AWS_SECRET_ACCESS_KEY
    - AWS_DEFAULT_REGION
    - ECR_REPO
+   - MONGODB_CONNECTION_URL
 
 ---
 ### Future improvements to implement
