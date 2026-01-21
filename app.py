@@ -12,7 +12,7 @@ from us_visa.constants.constant import APP_HOST, APP_PORT
 from us_visa.pipeline.training_pipeline import TrainingPipeline
 from us_visa.pipeline.prediction_pipeline import USvisaData,USvisaClassifier
 from dotenv import load_dotenv
-
+# 
 load_dotenv()
 app = FastAPI()
 
