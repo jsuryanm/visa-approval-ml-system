@@ -39,29 +39,34 @@ Prediction is done using features such as:
 Using the KNN Classifier or Random Forest Classifier (the model that is used for inferencing is the one that has higher cross validation f1 score higher than the benchmarked score).  
 
 ---
-## System Architecture 
+##  System Architecture
+
+```
 MongoDB
-↓
+  ↓
 Data Ingestion
-↓
-Data Validation (Schema + Drift)
-↓
+  ↓
+Data Validation (Schema + Drift Detection)
+  ↓
 Data Transformation (Feature Engineering + Encoding)
-↓
+  ↓
 Model Training (GridSearchCV)
-↓
+  ↓
 Model Evaluation (Compare with Production Model)
-↓
+  ↓
 Model Pusher
-↓
+  ↓
 AWS S3 (Model Registry)
-↓
+  ↓
 FastAPI Inference Service
-↓
+  ↓
 UI (HTML / Streamlit)
+```
+
 ---
 
 ## Project Directory Structure
+```
 visa-approval-ml-system/
 │
 ├── us_visa/
@@ -108,8 +113,7 @@ visa-approval-ml-system/
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
-
-
+```
 ---
 
 ### The workflow process behind the pipelines 
