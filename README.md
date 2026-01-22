@@ -68,7 +68,13 @@ UI (HTML / Streamlit)
 ## Project Directory Structure
 ```
 visa-approval-ml-system/
-│
+├── flowcharts/ # contains flowchart diagrams for the workflow of the pipelines
+│ ├── data_ingestion.png
+│ ├── data_validation.png
+│ ├── data_transformation.png
+│ │── model_trainer.png
+│ ├── model_evaluation.png
+│ └── model_pusher.png
 ├── us_visa/
 │ ├── components/ # Core pipeline stages
 │ │ ├── data_ingestion.py
@@ -293,7 +299,7 @@ AWS_SECRET_ACCESS_KEY_ID="AWS_SECRET_ACCESS_KEY_ID"
 
 	2. AmazonEC2FullAccess
 
-  3. AmazonS3FullAccess
+  	3. AmazonS3FullAccess
 
 	
 #### 3. Create ECR repo to store/save docker image
